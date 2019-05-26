@@ -1,12 +1,13 @@
 module.exports = function (db) {
   const module = {};
+  const IP_HEADER = "x-forwarded-for";
 
   const util = require("util");
   module.router = require("express").Router();
   const basicAuth = require("express-basic-auth");
 
   module.router.post("/new", basicAuth(BASIC_AUTH_OPTIONS), (req, res, next) => {
-    if (!IP_WHITELIST.includes(req.ip)) return next();
+    if (req.header(IP_HEADER) != undefined && !IP_WHITELIST.includes(req.header(IP_HEADER))) return next();
     if (req.query.apikey != API_KEY) return next();
     var article = req.body;
     db.addArticle(article, function(err) {
@@ -19,7 +20,7 @@ module.exports = function (db) {
   });
 
   module.router.get("/articles", basicAuth(BASIC_AUTH_OPTIONS), (req, res, next) => {
-    if (!IP_WHITELIST.includes(req.ip)) return next();
+    if (req.header(IP_HEADER) != undefined && !IP_WHITELIST.includes(req.header(IP_HEADER))) return next();
     if (req.query.apikey != API_KEY) return next();
     var config = makeHbsConfig("Articles", "");
     db.getArticles(function (result) {
@@ -41,7 +42,7 @@ module.exports = function (db) {
   });
 
   module.router.post("/:articleid", basicAuth(BASIC_AUTH_OPTIONS), (req, res, next) => {
-    if (!IP_WHITELIST.includes(req.ip)) return next();
+    if (req.header(IP_HEADER) != undefined && !IP_WHITELIST.includes(req.header(IP_HEADER))) return next();
     if (req.query.apikey != API_KEY) return next();
     var article = req.body;
     db.editArticle(article, function(err) {
@@ -54,7 +55,8 @@ module.exports = function (db) {
   });
 
   module.router.get("/:articleid", basicAuth(BASIC_AUTH_OPTIONS), (req, res, next) => {
-    if (req.query.action && req.query.apikey == API_KEY && IP_WHITELIST.includes(req.ip)) {
+    if (req.query.action && req.query.apikey == API_KEY && 
+        (req.header(IP_HEADER) == undefined ||IP_WHITELIST.includes(req.header(IP_HEADER)))) {
       switch (req.query.action) {
         case "view": 
           showArticle(req.params.articleid, res, next, true);
@@ -69,7 +71,8 @@ module.exports = function (db) {
           unpublish(res, req.params.articleid);
           break;
       }
-    } else if (req.params.articleid == "new" && req.query.apikey == API_KEY && IP_WHITELIST.includes(req.ip)) {
+    } else if (req.params.articleid == "new" && req.query.apikey == API_KEY && 
+        (req.header(IP_HEADER) == undefined ||IP_WHITELIST.includes(req.header(IP_HEADER)))) {
       showEditor(res);
     } else {
       showArticle(req.params.articleid, res, next, false);

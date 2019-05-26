@@ -113,6 +113,7 @@ app.use(function(err, req, res, next) {
 
 app.listen(SERVER_PORT, SERVER_HOST);
 
+console.log("Valid admin IPs: " + util.inspect(IP_WHITELIST));
 console.log(sprintf('New website started at %s listening on %s:%s', new Date().toISOString(), SERVER_HOST, SERVER_PORT));
 
 function monthToStr(month) {
