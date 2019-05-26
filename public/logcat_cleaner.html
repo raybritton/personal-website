@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Android Logcat cleaner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="text" style="width: 100%;height: 100%"></textarea>
+    <button id="clean_up" style="position: absolute; right: 16px;top: 16px; width: 60px;height:60px;background:cornflowerblue;color: white;">Clean up</button>
+    <script>
+      (function() {
+        var textarea = document.getElementById("text");
+        var cleanUp = document.getElementById("clean_up");
+        cleanUp.onclick = function() {
+          var original = textarea.value;
+          var fixed = original.split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line.length > 0)
+            .map((line) => {
+              var idx = line.indexOf(": ");
+              return line.substr(idx + 2);
+            });
+          
+          textarea.value = parse(fixed);
+        };
+      })();
+
+      function parse(lines) {
+        var inJson = false
+        
+        var scopeCount = 0;
+        var outputText = "";
+        var jsonStr = "";
+        var initalJsonChar = "";
+        
+        for (var i = 0; i < lines.length; i++) {
+          if (inJson) {
+            jsonStr += lines[i];
+            scopeCount += checkScopeChars(lines[i], initalJsonChar)
+            if (scopeCount == 0) {
+              inJson = false;
+              try{
+                outputText += JSON.stringify(JSON.parse(jsonStr), null, '\t');
+                outputText += "\n";
+              } catch {
+                outputText += "***Failed to parse***"
+                outputText += "\n";
+                outputText += jsonStr;
+                outputText += "\n";
+                outputText += "***";
+                outputText += "\n";
+              }
+            }
+          } else if (lines[i][0] == "{" || lines[i][0] == "[") {
+            initalJsonChar = lines[i][0];
+            inJson = true;
+            jsonStr = lines[i];
+            inSingleQuoteString = false;
+            inDoubleQuoteString = false;
+            scopeCount = checkScopeChars(lines[i], initalJsonChar)
+            if (scopeCount == 0) {
+              inJson = false;
+              try{
+                outputText += JSON.stringify(JSON.parse(jsonStr), null, '\t');
+                outputText += "\n";
+              } catch {
+                outputText += "***Failed to parse***"
+                outputText += "\n";
+                outputText += jsonStr;
+                outputText += "\n";
+                outputText += "***";
+                outputText += "\n";
+              }
+            }
+          } else {
+            outputText += lines[i];
+            outputText += "\n";
+          }
+        }
+
+        return outputText;
+      }
+
+      var inSingleQuoteString = false;
+      var inDoubleQuoteString = false;
+      function checkScopeChars(text, initalJsonChar) {
+        var scopeChange = 0;
+      
+        for(var i = 0; i < text.length; i++) {
+          var char = text[i];
+          if (char == "'" || char == '"') {
+            switch (char) {
+              case '"':
+                if (!inSingleQuoteString) inDoubleQuoteString = !inDoubleQuoteString;
+                break;
+              case "'":
+                if (!inDoubleQuoteString) inSingleQuoteString = !inSingleQuoteString;
+                break;
+            }
+          }
+
+          if (inSingleQuoteString || inDoubleQuoteString) continue;
+
+          switch (char) {
+            case "{":
+              if (initalJsonChar == "{") scopeChange += 1;
+              break;
+            case "[":
+              if (initalJsonChar == "[") scopeChange += 1;
+              break;
+            case "}":
+              if (initalJsonChar == "{") scopeChange -= 1;
+              break;
+            case "]":
+              if (initalJsonChar == "[") scopeChange -= 1;
+              break;
+          }
+        }
+        
+        return scopeChange;
+      }
+
+    </script>
+  </body>
+</html>

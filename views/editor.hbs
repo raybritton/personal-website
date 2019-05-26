@@ -1,0 +1,206 @@
+{{#contentFor "head"}}
+<script src="/highlighter-rust.js" type="text/javascript"></script>
+<script src="/highlighter-kotlin.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous" type="text/javascript"></script>
+{{/contentFor}}
+
+<div id="page-container"> 
+  {{> toolbar}}
+  <div id="editor">
+    <button class="editor-button" id="editor-save" type="button">Save</button>
+    {{#if article_id}}
+      <button class="editor-button" id="editor-preview" type="button">Preview</button>
+    {{/if}}
+    {{#if article_published}}
+      <p class="editor-published-indicator" id="editor-unpublish">Published</p>
+    {{else}}
+      <p class="editor-published-indicator" id="editor-publish">Not published</p>
+    {{/if}}
+    <img id="editor-image" src="/articleimage/{{article_image}}" />
+    <input id="editor-title" value="{{article_title}}" type="text" >
+    <div id="editor-body">
+      <textarea id="editor-body-input" class="editor-body-panels" rows="50">{{{article_body}}}</textarea>
+      <p id="editor-body-preview" class="editor-body-panels"></p>
+    </div>
+  </div>
+  <div id="image-panel-container" class="modal-container">
+    <div id="image-panel" class="modal-content">
+        <div id="image-panel-toolbar">
+          <p id="image-panel-title">Images</p>
+          <div id="image-panel-links">
+            <p id="image-panel-upload" class="image-panel-link">Upload new</p>
+            <p id="image-panel-close" class="image-panel-link">X</p>
+          </div>
+        </div>
+        <div id="image-panel-images"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="file-panel-container" class="modal-container">
+    <div id="file-panel" class="modal-content">
+        <p id="file-panel-title">Image upload</p>
+        <form enctype='multipart/form-data' id="image-form">
+				  <input id="image-file" type="file" name="image"></input>	
+        </form>
+        <button class="editor-button" id="file-panel-submit" type="button">Upload</button>
+        <button class="editor-button" id="file-panel-close" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#contentFor "scripts"}}
+<script>
+  const imagePanelContainer = $("#image-panel-container");
+  const filePanelContainer = $("#file-panel-container");
+  const previewPanel = $("#editor-body-preview")[0];
+  const imagePanelImages = $("#image-panel-images")[0];
+
+  $(document).ready(function(){
+    $("#editor-image")[0].imageId = "{{article_image}}";
+
+    $("#editor-preview").on('click', function() {
+      window.open('/admin/{{article_id}}?action=view&apikey={{apikey}}', "_blank");
+    });
+    $("#editor-save").on('click', function() {
+      saveArticle();
+    });
+
+    downloadImages();
+    
+    $('#editor-body-input').on('input propertychange', function(event) {
+      var text = event.currentTarget.value;
+      previewPanel.innerHTML = text;//.replace(/</g, "&lt;");
+      $(".kotlin-code").each(function (idx, element) { 
+        element.innerHTML = highlight_kotlin(element.innerHTML);
+      });
+      $(".rust-code").each(function (idx, element) { 
+        element.innerHTML = highlight_rust(element.innerHTML);
+      });
+    });
+
+    $("#editor-image").on('click', function() {
+      imagePanelContainer.show();
+    });
+
+    $("#image-panel-close").on('click', function() {
+      imagePanelContainer.hide();
+    });
+
+    $("#image-panel-upload").on('click', function() {
+      filePanelContainer.show();
+    });
+
+    $("#file-panel-close").on('click', function() {
+      filePanelContainer.hide();
+    });
+
+    $("#file-panel-submit").on('click', function() {
+      uploadImage();
+    });
+
+    $(document).on('click', ".image-panel-image", function(event) {
+      $('#editor-image')[0].src = "/articleimage/" + event.currentTarget.imageId;
+      $('#editor-image')[0].imageId = event.currentTarget.imageId;
+      imagePanelContainer.hide();
+    });
+  });
+
+  function downloadImages() {
+    $.ajax({
+      url: "/articleimages/?apikey={{apikey}}",
+        method: "GET",
+        success: function(data) {
+          data.forEach((image) => {
+            addImageToPanel(image);
+          });
+        },
+        failure: function() {
+          alert("failed to save");
+        }
+    })
+  }
+
+  function addImageToPanel(imageName) {
+    var node = document.createElement("img");
+    node.className = "image-panel-image";
+    node.src = "/articleimage/" + imageName;
+    node.imageId = imageName;
+    imagePanelImages.appendChild(node);
+  }
+
+  function saveArticle() {
+    var title = $("#editor-title")[0].value;
+    var body = $('#editor-body-input')[0].value//.replace(/</g, "&lt;");
+    var image = $("#editor-image")[0].imageId;
+    var id = {{#if article_id}} "{{article_id}}" {{else}} strToId(title) {{/if}};
+    if (title == "" || body == "") {
+      alert("incomplete");
+      return;
+    }
+    $.ajax({
+      url: "/admin/" + {{#if article_id}} "{{article_id}}" {{else}} "new" {{/if}} + "?apikey={{apikey}}",
+      method: "POST",
+      data: JSON.stringify({
+        title: title,
+        body: body,
+        image: image,
+        id: id
+      }),
+      dataType: "json",
+      contentType: "application/json",
+      success: function() {
+        alert("saved");
+        window.open('/admin/' + id + '?action=edit&apikey={{apikey}}', "_self");
+      },
+      error: function(a, b, c) {
+        alert("failed to save");
+      }
+    });
+  }
+
+  function uploadImage() {
+    var photoInput = $('#image-file')[0];
+    if (photoInput.files.length == 0) {
+      return;
+    }
+    var formData = new FormData();
+    var id = makeid(5) + "-" + strToId(photoInput.files[0].name);
+    formData.append("image", photoInput.files[0]);
+    $.ajax({
+      url: '/articleimages?apikey={{apikey}}&filename=' + id,
+      type: 'POST',
+      contentType: false,
+      processData: false,
+      enctype: 'multipart/form-data',
+      data: formData,
+      success: function (data) {
+        alert('Uploaded');
+        $('#editor-image')[0].src = "/articleimage/" + id;
+        $('#editor-image')[0].imageId = event.currentTarget.imageId;
+        addImageToPanel(id);
+        filePanelContainer.hide();
+        imagePanelContainer.hide();
+      },
+      error: function(xhr, status, error) {
+        alert('Failed to upload');
+      }
+    });
+  }
+
+  function makeid(length) {
+    var text = "";
+    var possible = "abcdefghijklmnopqrstuvwxyz";
+
+    for (var i = 0; i < length; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+  }
+
+  function strToId(value) {
+    return value.replace(/[ !\?\.@\$£%\^&\(\)\{\}\[\]\+_=:;'"]/g, "-").replace(/-+/g,"-").toLowerCase().substr(0, 50);
+  }
+</script>
+{{/contentFor}}

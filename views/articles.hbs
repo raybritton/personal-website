@@ -1,0 +1,15 @@
+<div id="page-container"> 
+  {{> toolbar}}
+  <div id="articles-list">
+    {{#each article}}
+      <div class="article-row">
+        <p class="article-row-title"><a href="/admin/{{this.id}}?action=edit&apikey={{@root.apikey}}">{{this.title}}</a></p>
+        {{#if this.published}}
+          <a class="article-row-button" href="/admin/{{this.id}}?apikey={{@root.apikey}}&action=unpublish">Unpublish</a>
+        {{else}}
+          <a class="article-row-button" href="/admin/{{this.id}}?apikey={{@root.apikey}}&action=publish">Publish</a>
+        {{/if}}
+      </div>
+    {{/each}}
+  </div>
+</div>

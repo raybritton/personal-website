@@ -1,0 +1,27 @@
+{{#contentFor "head"}}
+  <script src="/highlighter-rust.js" type="text/javascript"></script>
+  <script src="/highlighter-kotlin.js" type="text/javascript"></script>
+{{/contentFor}}
+
+<div id="page-container"> 
+  {{> toolbar}}
+  <div id="article">
+    <img id="article-image" src="/articleimage/{{article_image}}" />
+    <h2 id="article-title">{{article_title}}</h2>
+    <p id="article-date">{{article_date}}</p>
+    <div id="article-body">{{{article_body}}}</div>
+  </div>
+</div>
+
+{{#contentFor "scripts"}}
+  <script>
+    document.addEventListener("DOMContentLoaded", function(event) { 
+      Array.prototype.forEach.call(document.getElementsByClassName("kotlin-code"), function (code) {
+        code.innerHTML = highlight_kotlin(code.innerHTML);
+      });
+      Array.prototype.forEach.call(document.getElementsByClassName("rust-code"), function (code) {
+        code.innerHTML = highlight_rust(code.innerHTML);
+      });
+    });
+  </script>
+{{/contentFor}}

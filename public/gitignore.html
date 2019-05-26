@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Gitignores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        object-fit: contain;
+        font-family: monospace;
+      }
+      #content {
+        padding: 16px;
+      }
+      #title {
+        font-size: 2em; 
+        margin-bottom: 16px;
+      }
+      tr {
+        font-size: 1.4em; 
+        height: 30px;
+      }
+      td.clickable {
+        text-align: center;
+      }
+      td.clickable:hover {
+        background-color: rgba(80, 80, 255, 0.3);
+        cursor: pointer;
+      }
+      td.name {
+        width: 200px;
+        font-weight: bold;
+      }
+      td.link {
+        width: 120px;
+      }
+      td.view {
+        width: 80px;
+      }
+      td.wget {
+        width: 80px;
+      }
+      @keyframes example {
+        from {background-color: red;}
+        to {background-color: yellow;}
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content">
+      <h2 id="title">Gitignores</h2>
+      <table id="gi_table">
+        
+      </table>
+    </div>
+    <script>
+      const PATH = "/ignores/";
+      const FILES = [
+        ["Android (Public)", "android-public"],
+        ["Android (Private)", "android-private"],
+        ["Kotlin", "kotlin"],
+        ["Rust", "rust"],
+        ["Node", "node"],
+      ];
+
+      document.addEventListener("DOMContentLoaded", function(event) { 
+        var table = document.getElementById("gi_table");
+        FILES.forEach(function(file) {
+          table.appendChild(make_row(file[0],file[1]));
+        });
+      });
+
+      function make_row(name, id) {
+        var row = document.createElement("TR");
+        var name_cell = document.createElement("TD");
+        var link_cell = document.createElement("TD");
+        var view_cell = document.createElement("TD");
+        var wget_cell = document.createElement("TD");
+
+        var link = document.createElement("A");
+        link.setAttribute("href", PATH + id);
+        link_cell.classList.add("link");
+        link_cell.classList.add("clickable");
+        link.innerText = "Download";
+
+        var view = document.createElement("A");
+        view.setAttribute("href", "");
+        view_cell.classList.add("view");
+        view_cell.classList.add("clickable");
+        view.innerText = "View";
+
+        var wget = document.createElement("A");
+        wget.setAttribute("href", "#");
+        wget_cell.classList.add("wget");
+        wget_cell.classList.add("clickable");
+        wget.onclick = function() {
+          copyToClipboard("wget https://raybritton.co.uk/" + PATH + id + " -O .gitignore")
+        }
+        wget.innerText = "wget";
+
+        name_cell.appendChild(document.createTextNode(name));
+        name_cell.classList.add("name");
+        link_cell.appendChild(link);
+        view_cell.appendChild(view);
+        wget_cell.appendChild(wget);
+
+        row.appendChild(name_cell);
+        row.appendChild(link_cell);
+        row.appendChild(view_cell);
+        row.appendChild(wget_cell);
+
+        return row;
+      }
+
+      const copyToClipboard = str => {
+        const el = document.createElement('textarea');
+        el.value = str;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      };
+    </script>
+  </body>  
+</html>

@@ -1,0 +1,15 @@
+<div id="page-container"> 
+  {{> toolbar}}
+  
+  <div id="article-container">
+    {{#each article}} 
+      <div class="article-card">
+        <a href="/article/{{this.id}}">
+          <img class="article-card-image" src="/articleimage/{{this.image}}" />
+          <p class="article-card-title">{{this.title}}</p>
+          <p class="article-card-date">{{this.date}}</p> 
+        </a>
+      </div>
+    {{/each}}
+  </div>
+</div>

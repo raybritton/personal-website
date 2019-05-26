@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}" />
+    <link rel="stylesheet" type="text/css" href="/theme.css" />
+    {{{block "head"}}}
+  </head>
+  <body>
+    {{{body}}}
+    <div id="footer">
+      <p>Copyright Ray Britton 2019</p>
+    </div>
+    {{#if debug}}
+      <p id="debug">{{debug}}</p>
+    {{/if}}
+    {{{block "scripts"}}}
+  </body>
+</html>
