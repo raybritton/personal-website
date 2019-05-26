@@ -52,7 +52,7 @@ app.get("/articleimage/:id", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  var config = makeHbsConfig("Ray Britton", "Articles and portfolio for Ray Britton - Android Developer");
+  var config = makeHbsConfig("Ray Britton", "Articles and portfolio for Ray Britton - Developer");
   db.getPublishedArticles(function (result) {
     if (result.error) {
       console.error(result.err);

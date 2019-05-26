@@ -11,16 +11,7 @@ const db = new sqlite.Database(DB_FILE, (err) => {
 db.exec("CREATE TABLE IF NOT EXISTS articles (id TEXT PRIMARY KEY, image BLOB, title TEXT, body TEXT, created TEXT, published INTEGER)");
 
 if (DB_FILE === ":memory:") {
-  db.run("INSERT INTO articles (id, image, title, body, created, published) VALUES (?, ?, ?, ?, ?, ?)", [
-    "hex-live-wallpaper", "hex-live-wallpaper-jpg", "Hex Live Wallpaper", "After seeing a static image of blue hexagons I really wanted an animated version but none of the live wallpapers on the Play Store were close enough so I created this and I've used on all my phones since. I originally had quite a bit of trouble with the co-ordinate system until I read <i>the</i> article on hexagon co-ords: <a href=\"https://www.redblobgames.com/grids/hexagons\">https://www.redblobgames.com/grids/hexagons</a>. <br><br>The app is available on the store for free at <a href=\"https://play.google.com/store/apps/details?id=com.moorhenapps.bluehex\">https://play.google.com/store/apps/details?id=com.moorhenapps.bluehex</a>", new Date().toString(), 1
-  ], function (err) {
-    if (err) console.error(err);
-  });
-  db.run("INSERT INTO articles (id, image, title, body, created, published) VALUES (?, ?, ?, ?, ?, ?)", [
-    "hex-live-wallpaper2", "hex-live-wallpaper-jpg", "Hex Live Wallpaper", "After seeing a static image of blue hexagons I really wanted an animated version but none of the live wallpapers on the Play Store were close enough so I created this and I've used on all my phones since. I originally had quite a bit of trouble with the co-ordinate system until I read <i>the</i> article on hexagon co-ords: <a href=\"https://www.redblobgames.com/grids/hexagons\">https://www.redblobgames.com/grids/hexagons</a>. <br><br>The app is available on the store for free at <a href=\"https://play.google.com/store/apps/details?id=com.moorhenapps.bluehex\">https://play.google.com/store/apps/details?id=com.moorhenapps.bluehex</a>", new Date().toString(), 1
-  ], function (err) {
-    if (err) console.error(err);
-  });
+  //debug populating code here
 }
 
 var exports = module.exports = {};

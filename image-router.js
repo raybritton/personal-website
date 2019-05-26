@@ -3,10 +3,15 @@ const router = require("express").Router();
 
 router.get("/", (req, res, next) => {
   if (req.query.apikey != API_KEY) return next();
-  var files = fs.readdirSync(IMAGE_DIR)
-      .filter((file) => file.endsWith("-png") || file.endsWith("-jpg") || file.endsWith("-jpg") );
-
-  res.send(files);
+  fs.readdir(IMAGE_DIR, function (err, files) {
+    if (err) {
+      console.error(err);
+      next();
+      return;
+    }
+    var files = files.filter((file) => file.endsWith("-png") || file.endsWith("-jpg") || file.endsWith("-jpeg") );
+    res.send(files);
+  });
 });
 
 router.post("/", (req, res, next) => {
