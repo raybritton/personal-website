@@ -38,7 +38,7 @@
       td.view {
         width: 80px;
       }
-      td.wget {
+      td.curl {
         width: 80px;
       }
       @keyframes example {
@@ -76,7 +76,7 @@
         var name_cell = document.createElement("TD");
         var link_cell = document.createElement("TD");
         var view_cell = document.createElement("TD");
-        var wget_cell = document.createElement("TD");
+        var curl_cell = document.createElement("TD");
 
         var link = document.createElement("A");
         link.setAttribute("href", PATH + id);
@@ -90,25 +90,25 @@
         view_cell.classList.add("clickable");
         view.innerText = "View";
 
-        var wget = document.createElement("A");
-        wget.setAttribute("href", "#");
-        wget_cell.classList.add("wget");
-        wget_cell.classList.add("clickable");
-        wget.onclick = function() {
-          copyToClipboard("wget https://raybritton.co.uk/" + PATH + id + " -O .gitignore")
+        var curl = document.createElement("A");
+        curl.setAttribute("href", "#");
+        curl_cell.classList.add("curl");
+        curl_cell.classList.add("clickable");
+        curl.onclick = function() {
+          copyToClipboard("curl -o .gitignore https://raybritton.co.uk/" + PATH + id)
         }
-        wget.innerText = "wget";
+        curl.innerText = "curl";
 
         name_cell.appendChild(document.createTextNode(name));
         name_cell.classList.add("name");
         link_cell.appendChild(link);
         view_cell.appendChild(view);
-        wget_cell.appendChild(wget);
+        curl_cell.appendChild(curl);
 
         row.appendChild(name_cell);
         row.appendChild(link_cell);
         row.appendChild(view_cell);
-        row.appendChild(wget_cell);
+        row.appendChild(curl_cell);
 
         return row;
       }
