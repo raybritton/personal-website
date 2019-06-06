@@ -17,7 +17,7 @@
     "express": "^4.16.4",
     "express-basic-auth": "^1.1.6",
     "express-fileupload": "^1.1.4",
-    "express-hbs": "^1.1.0",
+    "express-hbs": "^2.1.2",
     "hbs": "^4.0.3",
     "sprintf-js": "^1.1.2",
     "sqlite3": "^4.0.6"
