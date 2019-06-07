@@ -47,8 +47,7 @@
 	<body>
 		<div class="container-fluid list" id="third-party"> 
 		</div>
-		<div class="container-fluid list" id="google">
-		</div>
+		<a href="https://developer.android.com/jetpack/androidx/versions" style="font-size: 30px;display: inline-block;">Google Library Versions</a>
 		<script>
 			const libraries = [
 				{
@@ -118,64 +117,10 @@
 				}
 			];
 
-			const googleLibs = [
-				{
-					name: "ConstraintLayout",
-					repo: "androidx.constraintlayout/constraintlayout"
-				},
-				{
-					name: "CardView",
-					repo: "androidx.cardview/cardview"
-				},
-				{
-					name: "Annotations",
-					repo: "androidx.annotation/annotation"
-				},
-				{
-					name: "RecyclerView",
-					repo: "androidx.recyclerview/recyclerview"
-				},
-				{
-					name: "Room",
-					repo: "androidx.room/room-runtime"
-				},
-				{
-					name: "Room RxJava",
-					repo: "androidx.room/room-rxjava2"
-				},
-				{
-					name: "Room Compiler",
-					repo: "androidx.room/room-compiler"
-				},
-				{
-					name: "Work Manager",
-					repo: "androidx.work/work-runtime"
-				},
-				{
-					name: "Work Manager Testing",
-					repo: "androidx.work/work-testing"
-				},
-				{
-					name: "Work Manager RxJava",
-					repo: "androidx.work/work-rxjava2"
-				},
-				{
-					name: "Multidex",
-					repo: "androidx.multidex/multidex"
-				},
-				{
-					name: "AppCompat",
-					repo: "androidx.appcompat/appcompat"
-				}
-			];
 
 			const templatePrefix1 = '<div class="library row"><p>';
 			const templatePrefix2 = '</p><div><img src="';
 			const templateSuffix = '" ></div></div>';
-
-			const googleTemplate1 = '<div class="library row"><p>';
-			const googleTemplatePrefix = '</p><div><a href="https://mvnrepository.com/artifact/';
-			const googleTemplateSuffix = '/latest">Latest version</a></div></div>';
 
 			const providers = {
 				maven: {
@@ -193,10 +138,6 @@
 			    const container = document.getElementById("third-party");
 			    libraries.forEach(function (lib) {
 						container.insertAdjacentHTML('beforeend', `${templatePrefix1}${lib.name}${templatePrefix2}${providers[lib.type].prefix}${lib.package}${providers[lib.type].suffix}${templateSuffix}`);
-					});
-					const googleContainer = document.getElementById("google");
-					googleLibs.forEach(function (lib) {
-						googleContainer.insertAdjacentHTML('beforeend', `${googleTemplate1}${lib.name}${googleTemplatePrefix}${lib.repo}${googleTemplateSuffix}`);
 					});
 			});
 
